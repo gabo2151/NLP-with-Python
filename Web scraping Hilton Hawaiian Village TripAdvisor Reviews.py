@@ -65,7 +65,7 @@ def parse(session, url):
 
     num_reviews = soup.find('span', class_='reviews_header_count').text # get text
     num_reviews = num_reviews[1:-1] 
-    num_reviews = num_reviews.replace(',', '')
+    num_reviews = num_reviews.replace('.', '') # this could be something related to my location, I don't know really, but it fix my problems
     num_reviews = int(num_reviews) # convert text into integer
     print('[parse] num_reviews ALL:', num_reviews)
 
@@ -85,10 +85,10 @@ def parse(session, url):
 
         items += subpage_items
 
-        if len(subpage_items) < 5:
+        if len(subpage_items) < 10: # I had problems with a offset of 5, get trapped on a loop
             break
 
-        offset += 5
+        offset += 10
 
     return items
 
@@ -128,8 +128,11 @@ def parse_reviews(session, url):
     if not soup:
         print('[parse_reviews] no soup:', url)
         return
-
-    hotel_name = soup.find('h1', id='HEADING').text
+    
+    if soup.find('h1', id='HEADING'): # Just... I needed to fix this quick... srry
+        hotel_name = soup.find('h1', id='HEADING').text
+    else:
+        hotel_name = 'NO NAME'
 
     reviews_ids = get_reviews_ids(soup)
     if not reviews_ids:
@@ -201,7 +204,7 @@ start_urls = [
     'https://www.tripadvisor.ca/Hotel_Review-g60982-d87016-Reviews-Hilton_Hawaiian_Village_Waikiki_Beach_Resort-Honolulu_Oahu_Hawaii.html',
 ]
 
-lang = 'en'
+lang = 'es'
 
 headers = [ 
     DB_COLUMN, 
